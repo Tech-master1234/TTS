@@ -47,12 +47,12 @@ pip install -r requirements.txt
 
 ---
 
-```md
+
 ## ▶️ Usage
 
 ### Run the App:
 ```bash
-python voice_typing.py
+python main.py
 ```
 
 ### Start Speaking:
@@ -105,4 +105,3 @@ voice-typing-docs/
 
 ---
 
-Let me know if you want this saved as a downloadable `.md` file or need it included in a full `README.md`.
