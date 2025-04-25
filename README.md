@@ -103,5 +103,3 @@ voice-typing-docs/
 - Multi-language support
 ```
 
----
-
