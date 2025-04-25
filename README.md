@@ -43,8 +43,6 @@ pip install -r requirements.txt
 
 - Internet connection (for speech recognition)
 
-- Here's your provided content fully converted into proper **Markdown (`.md`)** format, including all titles, code blocks, and structured tables:
-
 ---
 
 
