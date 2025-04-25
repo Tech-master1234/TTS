@@ -101,5 +101,5 @@ voice-typing-docs/
 - Export as `.docx` or `.pdf`  
 - Custom keyword configuration  
 - Multi-language support
-```
+
 
