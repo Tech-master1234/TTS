@@ -26,5 +26,5 @@ A hands-free **Text-to-Speech** Python application designed for **typing documen
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/voice-typing-docs.git
-cd voice-typing-docs
+git clone https://github.com/Tech-master1234/TTS.git
+cd TTS
