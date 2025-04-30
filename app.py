@@ -1,7 +1,14 @@
+from flask import Flask, render_template, jsonify
 import speech_recognition as sr
 import pyautogui
 import time
 import sys
+import threading
+import queue
+
+app = Flask(__name__, template_folder='templates')
+command_queue = queue.Queue()
+is_running = False
 
 def get_audio(prompt="Speak:"):
     recognizer = sr.Recognizer()
@@ -13,7 +20,7 @@ def get_audio(prompt="Speak:"):
                 text = recognizer.recognize_google(audio).lower().strip()
                 if "terminate" in text:
                     print("Program terminated by command.")
-                    sys.exit()
+                    return "terminate"
                 return text
             except (sr.UnknownValueError, sr.RequestError):
                 continue
@@ -72,15 +79,14 @@ def handle_content():
             else:
                 pyautogui.write(f", {text}", interval=0.05)
 
-def main():
-    print("You have 5 seconds to focus your cursor in the text editor...")
-    time.sleep(5)
-
-    print("Say 'title', 'subtitle', or 'content' to begin. Say 'stop' to exit.")
-    
-    while True:
+def voice_control_thread():
+    global is_running
+    while is_running:
         command = get_audio("Listening for command:")
-        if "title" in command:
+        if command == "terminate":
+            is_running = False
+            break
+        elif "title" in command:
             handle_title()
         elif "subtitle" in command:
             handle_subtitle()
@@ -89,5 +95,26 @@ def main():
         else:
             print(f"Ignoring unrecognized command: {command}")
 
+@app.route("/")
+def index():
+    return render_template('index.html')
+
+@app.route("/start")
+def start_service():
+    global is_running
+    if not is_running:
+        is_running = True
+        threading.Thread(target=voice_control_thread).start()
+        return jsonify({"status": "success", "message": "Voice service started."})
+    return jsonify({"status": "info", "message": "Service already running."})
+
+@app.route("/stop")
+def stop_service():
+    global is_running
+    if is_running:
+        is_running = False
+        return jsonify({"status": "success", "message": "Voice service stopped."})
+    return jsonify({"status": "info", "message": "Service not running."})
+
 if __name__ == "__main__":
-    main()
+    app.run(debug=True, host='0.0.0.0', port=8080)

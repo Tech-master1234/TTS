@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice Controlled Text Editor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    #editor {
+      width: 100%;
+      height: 400px;
+      padding: 1rem;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      resize: vertical;
+      outline: none;
+    }
+    .controls {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      margin: 0.5rem;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button.stop {
+      background-color: #dc3545;
+    }
+    #status {
+      text-align: center;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      border-radius: 5px;
+    }
+    .status-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status-info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+    }
+    .status-error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <h1>Voice-Controlled Editor</h1>
+  <textarea id="editor" placeholder="Focus here before starting..."></textarea>
+  
+  <div class="controls">
+    <button onclick="startService()">Start Service</button>
+    <button class="stop" onclick="stopService()">Stop Service</button>
+  </div>
+
+  <div id="status"></div>
+
+  <script>
+    const API_BASE_URL = window.location.origin;  // This will automatically get the current server URL
+
+    function updateStatus(message, type) {
+      const statusDiv = document.getElementById('status');
+      statusDiv.textContent = message;
+      statusDiv.className = `status-${type}`;
+    }
+
+    function checkConnection() {
+      return fetch(`${API_BASE_URL}/`)
+        .then(response => response.ok)
+        .catch(() => false);
+    }
+
+    async function startService() {
+      try {
+        const isConnected = await checkConnection();
+        if (!isConnected) {
+          updateStatus("Cannot connect to server. Please make sure the server is running.", 'error');
+          return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/start`);
+        const data = await response.json();
+        updateStatus(data.message, data.status);
+        if (data.status === 'success') {
+          document.getElementById('editor').focus();
+        }
+      } catch (err) {
+        updateStatus("Error starting service. Please make sure the server is running.", 'error');
+        console.error('Error:', err);
+      }
+    }
+
+    async function stopService() {
+      try {
+        const isConnected = await checkConnection();
+        if (!isConnected) {
+          updateStatus("Cannot connect to server. Please make sure the server is running.", 'error');
+          return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/stop`);
+        const data = await response.json();
+        updateStatus(data.message, data.status);
+      } catch (err) {
+        updateStatus("Error stopping service. Please make sure the server is running.", 'error');
+        console.error('Error:', err);
+      }
+    }
+  </script>
+</body>
+</html>
